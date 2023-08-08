@@ -13,5 +13,3 @@ RUN npm install
 
 COPY --chown=node:node src src
 COPY --chown=node:node tsconfig.json .
-
-EXPOSE 3000
