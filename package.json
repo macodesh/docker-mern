@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "compose:up": "docker-compose up -d",
-    "compose:down": "docker-compose down"
+    "compose:down": "docker-compose down",
+    "install:back": "cd backend && npm install && cd ..",
+    "install:front": "cd frontend && npm install && cd ..",
+    "install:all": "npm run install:back && npm run install:front"
   },
   "keywords": [],
   "author": "",
