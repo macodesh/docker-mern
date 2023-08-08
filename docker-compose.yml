@@ -1,0 +1,88 @@
+version: "3.5"
+
+services:
+  db:
+    container_name: mern_db
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  adminer:
+    image: adminer
+    container_name: mern_adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: "echo 'php -r \"phpinfo();\"'"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  backend:
+    container_name: mern_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.node
+    user: "node"
+    environment:
+      NODE_ENV: development
+      DB_USER: root
+      DB_PASSWORD: mongo
+      DB_HOST: db
+      DB_PORT: 27017
+    volumes:
+      - ./backend:/app
+    command: "npm run dev"
+    tty: true
+    stdin_open: true
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    container_name: mern_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.react
+    user: "node"
+    volumes:
+      - ./frontend:/app
+    command: "npm run dev"
+    tty: true
+    stdin_open: true
+    restart: always
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5174:5174"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5174/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
