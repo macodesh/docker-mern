@@ -10,7 +10,3 @@ WORKDIR /app
 COPY --chown=node:node package*.json .
 
 RUN npm install
-
-COPY --chown=node:node src src
-COPY --chown=node:node public public
-COPY --chown=node:node ./tsconfig.json .
