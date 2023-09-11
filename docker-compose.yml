@@ -34,7 +34,6 @@ services:
       start_period: 10s
 
   backend:
-    image: mern_nodejs
     container_name: mern_backend
     build:
       context: ./backend
@@ -65,7 +64,6 @@ services:
       start_period: 10s
 
   frontend:
-    image: mern_reactjs
     container_name: mern_frontend
     build:
       context: ./frontend
